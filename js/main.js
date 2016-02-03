@@ -7,7 +7,6 @@ function initialize(){
 
 //function to create a table with cities and their populations
 function cities(){
-    console.log(8);
     //define two arrays for cities and population
     var cityPop = [
         { 
@@ -30,13 +29,13 @@ function cities(){
 
     //append the table element to the div
     $("#mydiv").append("<table>");
-    console.log(31);
+    
     //append a header row to the table
     $("table").append("<tr>");
 
     //add the "City" and "Population" columns to the header row
     $("tr").append("<th>City</th><th>Population</th>");
-    console.log(37);
+
     //loop to add a new row for each city
     for (var i = 0; i < cityPop.length; i++){
         //assign longer html strings to a variable
@@ -59,7 +58,7 @@ function cities(){
 
 //this function adds another column to cityPop, adds more attributes to the objects
 function addColumns(cityPop){
-    console.log(61);
+    
     $("tr").each(function(i){ //for each object in city pop
         if(i==0) {
              $(this).append('<th>City Size</th>'); //labeling the top row
