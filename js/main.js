@@ -1,115 +1,60 @@
-//Student: Veronica Plum, Spring'16, Geog575, 2/2/2016 
+//Student: Veronica Plum, Spring'16, Geog575, 2/10/2016, module 3
 
 //initialize function called when the script loads
 function initialize(){
-    cities();
+    debugAjax();
 };
 
-//function to create a table with cities and their populations
-function cities(){
-    //define two arrays for cities and population
-    var cityPop = [
-        { 
-            city: 'Oslo',
-            population: 958378
-        },
-        {
-            city: 'Bergen',
-            population: 250420
-        },
-        {
-            city: 'Stavanger',
-            population: 210874
-        },
-        {
-            city: 'Trondheim',
-            population: 175068
-        }
-    ];
-
-    //append the table element to the div
-    $("#mydiv").append("<table>");
+function jsAjax(){
+    //step1: create request
+    var ajaxRequest = new XMLHttpRequest();
     
-    //append a header row to the table
-    $("table").append("<tr>");
-
-    //add the "City" and "Population" columns to the header row
-    $("tr").append("<th>City</th><th>Population</th>");
-
-    //loop to add a new row for each city
-    for (var i = 0; i < cityPop.length; i++){
-        //assign longer html strings to a variable
-        var rowHtml = "<tr><td>" + cityPop[i].city + "</td><td>" + cityPop[i].population + "</td></tr>";
-        //add the row's html string to the table
-        $("table").append(rowHtml);
+    //step2: create an event handler to send recieving data to callback function
+    //ajaxRequest(object) holds an event listener
+    ajaxRequest.onreadystatechange = function(){ //onreadystatechange is an event listener
+        //for kicks:
+        console.log("readyState: ", ajaxRequest.readyState);
+        //whenever readyState gets to 4, the response is recived from the server
+        if(ajaxRequest.readyState === 4){ 
+            debugCallback(ajaxRequest.response); //changed to debug-callback, line 51
+        };
     };
-    addColumns(cityPop); //calls addColumns, which adds more data to cityPop, and then additionally displayed on the table via mydiv 
-    addEvents(); //calls addEvents, such as mouseover and clickme functions
-};
-
-    //the text color is assigned to light blue (given there is no mouseover interaction) 
-    $('#mydiv').css('color', 'lightBlue');
-
-    //change the text size and alignment
-    $('#mydiv').css({
-        'font-size': '2em',
-        'text-align': 'left'
-    });
-
-//this function adds another column to cityPop, adds more attributes to the objects
-function addColumns(cityPop){
+    //Step3: open server connection
+    ajaxRequest.open('GET', 'data/MegaCities.geojson', true);
     
-    $("tr").each(function(i){ //for each object in city pop
-        if(i==0) {
-             $(this).append('<th>City Size</th>'); //labeling the top row
-        }else{
-        var citySize; //variable used to represent the size of a city
-            //cityPop[i-1] object is assigned a 'rating' based on the size of it's population(citySize)a
-    		if (cityPop[i-1].population < 100000){ 
-    			citySize = 'Small';
+    //step4: Set the response data type
+    ajaxRequest.responseType = "json";
+    
+    //step5: Send the request 
+    ajaxRequest.send();
+};
 
-    		} else if (cityPop[i-1].population < 500000){
-    			citySize = 'Medium';
+//define AJAX function
+function debugAjax(){
+    //basic jQuery ajax method
+    var mydata; //declared mydata variable
+    $.ajax("data/MegaCities.geojson", {
+        dataType: "json",
+        success: function(response){ // response(mydata) is sent to 20, which will next go to line 51
+            mydata = response; 
 
-    		} else {
-    			citySize = 'Large';
-    		};
-            //here the citySize
-            $(this).append('<td>' + citySize + '</td>'); //adds citySize to cityPop(this) 
+            $(mydiv).append('GeoJSON data: ' + JSON.stringify(mydata)); //attaches mydata in the geojson to mydiv, displaying it on the web page. We need this statement here so that it only prints once
         }
-    });
+    }); 
+    //check data
+    console.log(mydata); //UNDEFINED, unable to access data here
+    //would be unfitting to place a GeoJSON attachment to myDiv here
 };
 
-//this function provides #feedback to the User(#who) 
-function addEvents(){
-    //this function changes the color of the text as the mouse runs over it
-	$("table").mouseover(function(){
-		
-		var color = "rgb("; //this is the beginning of the color variable 
-
-		for (var i=0; i<3; i++){ //executes the program 3 times(i=0,1,2) to get three integers 0-255 for a color
-
-			var random = Math.round(Math.random() * 255);
-
-			color += random;
-
-			if (i<2){        //separates the three digit color numbers so that color = rgb(###,###,###) or a value                               of a color
-				color += ",";
-			
-			} else {
-				color += ")";
-		};
-	};
-            $(this).css('color', color); //applies color to the table(aka this) after color has fully been defined
-    });
-        
-	function clickme() { //clicking on the table area will prompt a message to the user via pop-up
-        
-		alert('Hey, you clicked me!'); //message #feedback to user(considerationsOfUserAbility) #Who lecture
-	};
-
-	$("table").on('click', clickme); //the interaction connected with the above function 
+//the debugCallback
+function debugCallback(response){ //collects response from line 20, mydata comes from debugAJAX before that (line 34 function) 
+    var mydata = response;  //we must reasign mydata, but the data within 'mydata' and the GeoJSON file is passed via the 'response' parameter
+    console.log(mydata); //Data can be accessed here via response, mydata reassignment
+    //unfiting to place mydiv and GeoJSON mydata relationship statement here as it would display three sets of mydata to the webpage (unnessisary) 
 };
 
-//call the initialize function when the document has loaded
-$(document).ready(initialize); 
+//removed countToThree method, since it reassigns 'mydata' and would allow 'mydata' to come out as defined, which it was, but the mydata variable attached to the geoJSON was not accessible here. So it was removed
+
+//computational thinking structure: initalize executed[ln59],debugAjax called[ln5]>debugAjax(mydata is assigned)[ln39]>jsAjax executed[ln60]>jsAjax response begins[ln8]>windowloads on request[ln60] 
+$(document).ready(initialize);
+window.onload = jsAjax();
