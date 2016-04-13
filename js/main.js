@@ -57,4 +57,5 @@ function debugCallback(response){ //collects response from line 20, mydata comes
 
 //computational thinking structure: initalize executed[ln59],debugAjax called[ln5]>debugAjax(mydata is assigned)[ln39]>jsAjax executed[ln60]>jsAjax response begins[ln8]>windowloads on request[ln60] 
 $(document).ready(initialize);
+console.log(response);
 window.onload = jsAjax();
